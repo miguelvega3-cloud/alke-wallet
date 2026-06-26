@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alke Wallet - Menú Principal</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <style>
+    body { background-color: #f4f6f9; }
+    .menu-container { max-width: 500px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .redirect-legend { font-style: italic; color: #007bff; font-weight: bold; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
+    <a class="navbar-brand font-weight-bold" href="#">Alke Wallet</a>
+    <div class="ml-auto">
+      <a href="index.html" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <div class="container menu-container">
+    <div class="card text-white bg-primary mb-4 shadow-sm">
+      <div class="card-body text-center">
+        <h5 class="card-title text-uppercase" style="opacity: 0.8;">Dinero en cuenta</h5>
+        <h2 class="card-text font-weight-bold" id="balanceDisplay">$0</h2>
+      </div>
+    </div>
+    
+    <h5 class="text-secondary mb-3 font-weight-bold text-center">Operaciones disponibles</h5>
+    <button class="btn btn-outline-primary btn-block btn-lg mb-2 nav-btn" data-url="deposit.html" data-name="Depósito">Depositar Fondos</button>
+    <button class="btn btn-outline-primary btn-block btn-lg mb-2 nav-btn" data-url="sendmoney.html" data-name="Enviar Dinero">Enviar Dinero</button>
+    <button class="btn btn-outline-primary btn-block btn-lg mb-2 nav-btn" data-url="transactions.html" data-name="Últimos Movimientos">Ver Últimos Movimientos</button>
+    
+    <div id="legendContainer" class="redirect-legend text-center"></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Cargar saldo dinámico
+      const currentBalance = localStorage.getItem('walletBalance') || '60000';
+      $('#balanceDisplay').text('$' + parseFloat(currentBalance).toLocaleString('es-CL'));
+
+      // Evento dinámico con leyenda de redirección
+      $('.nav-btn').click(function() {
+        const targetUrl = $(this).data('url');
+        const screenName = $(this).data('name').toLowerCase();
+
+        $('#legendContainer').text('Redirigiendo a ' + screenName + '...');
+
+        setTimeout(function() {
+          window.location.href = targetUrl;
+        }, 1200);
+      });
+    });
+  </script>
+</body>
+</html>
