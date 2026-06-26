@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alke Wallet - Depositar</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <style>
+    body { background-color: #f4f6f9; padding-top: 30px; }
+    .container { max-width: 450px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .deposit-legend { color: #28a745; font-weight: bold; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center font-weight-bold mb-4">Depositar Fondos</h2>
+    
+    <div id="alert-container"></div>
+
+    <div class="card p-3 bg-light mb-3 text-center shadow-sm">
+      <span class="text-muted text-uppercase small font-weight-bold">Saldo Actual</span>
+      <h4 class="font-weight-bold text-dark m-0" id="currentBalanceForm">$0</h4>
+    </div>
+
+    <form id="depositForm">
+      <div class="form-group">
+        <label for="depositAmount" class="font-weight-bold">Monto a depositar:</label>
+        <input type="number" class="form-control form-control-lg" id="depositAmount" placeholder="Ej: 5000" min="1" required>
+      </div>
+      <button type="submit" class="btn btn-success btn-block btn-lg font-weight-bold shadow-sm">Realizar depósito</button>
+    </form>
+    
+    <div id="depositLegendContainer" class="deposit-legend text-center"></div>
+
+    <a href="menu.html" class="btn btn-secondary btn-block mt-4">Volver al Menú Principal</a>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      let balance = parseFloat(localStorage.getItem('walletBalance') || '60000');
+      $('#currentBalanceForm').text('$' + balance.toLocaleString('es-CL'));
+
+      $('#depositForm').submit(function(e) {
+        e.preventDefault();
+        const amount = parseFloat($('#depositAmount').val());
+
+        if (isNaN(amount) || amount <= 0) return;
+
+        balance += amount;
+        localStorage.setItem('walletBalance', balance.toString());
+
+        // Guardar la transacción de forma estructurada para el filtro
+        let history = JSON.parse(localStorage.getItem('walletTransactions') || '[]');
+        history.unshift({ tipo: 'deposito', detalle: `Depósito de fondos - $${amount.toFixed(2)}` });
+        localStorage.setItem('walletTransactions', JSON.stringify(history));
+
+        // Confirmación bajo el formulario
+        $('#depositLegendContainer').text('Has depositado con éxito un monto de: $' + amount.toLocaleString('es-CL'));
+
+        // Alerta dinámica Bootstrap
+        $('#alert-container').html(`
+          <div class="alert alert-success shadow-sm" role="alert">
+            ¡Depósito procesado! Redirigiendo en 2 segundos...
+          </div>
+        `);
+
+        setTimeout(function() {
+          window.location.href = 'menu.html';
+        }, 2000);
+      });
+    });
+  </script>
+</body>
+</html>
