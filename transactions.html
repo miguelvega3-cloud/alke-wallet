@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alke Wallet - Últimos Movimientos</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <style>
+    body { background-color: #f4f6f9; padding-top: 30px; }
+    .container { max-width: 480px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center font-weight-bold mb-4">Últimos Movimientos</h2>
+
+    <div class="form-group">
+      <label for="filterType" class="font-weight-bold">Filtrar por tipo de movimiento:</label>
+      <select id="filterType" class="form-control">
+        <option value="todos">Todos los movimientos</option>
+        <option value="compra">Compras</option>
+        <option value="deposito">Depósitos</option>
+        <option value="transferencia">Transferencias enviadas</option>
+      </select>
+    </div>
+
+    <ul class="list-group shadow-sm" id="transactionsList"></ul>
+
+    <a href="menu.html" class="btn btn-secondary btn-block mt-4 font-weight-bold">Volver al Menú Principal</a>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Lista ficticia obligatoria estandarizada para la evaluación
+    let listaTransacciones = [
+      { tipo: 'compra', detalle: 'Compra en línea - $50.00' },
+      { tipo: 'deposito', detalle: 'Depósito estándar - $100.00' },
+      { tipo: 'transferencia', detalle: 'Transferencia recibida - $75.00' },
+      { tipo: 'compra', detalle: 'Compra de víveres - $5,550.00' },
+      { tipo: 'deposito', detalle: 'Depósito cajero automático - $10,500.00' }
+    ];
+
+    $(document).ready(function() {
+      // Unir transacciones locales dinámicas del LocalStorage
+      const localHistory = JSON.parse(localStorage.getItem('walletTransactions') || '[]');
+      listaTransacciones = [...localHistory, ...listaTransacciones];
+
+      // Inicializar cargando todo
+      mostrarUltimosMovimientos('todos');
+
+      // Detectar cambios en el selector jQuery
+      $('#filterType').change(function() {
+        const filtro = $(this).val();
+        mostrarUltimosMovimientos(filtro);
+      });
+    });
+
+    // Función requerida por la consigna
+    function mostrarUltimosMovimientos(filtro) {
+      const $listContainer = $('#transactionsList');
+      $listContainer.empty();
+
+      listaTransacciones.forEach(movimiento => {
+        if (filtro === 'todos' || movimiento.tipo === filtro) {
+          const badgeStyle = getTipoTransaccion(movimiento.tipo);
+          
+          $listContainer.append(`
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>${movimiento.detalle}</span>
+              <span class="badge ${badgeStyle.clase}">${badgeStyle.texto}</span>
+            </li>
+          `);
+        }
+      });
+
+      if($listContainer.children().length === 0) {
+        $listContainer.append('<li class="list-group-item text-muted text-center">No hay registros asociados.</li>');
+      }
+    }
+
+    // Función auxiliar requerida para dar formato legible
+    function getTipoTransaccion(tipo) {
+      switch (tipo) {
+        case 'compra':
+          return { texto: 'Compra', clase: 'badge-danger' };
+        case 'deposito':
+          return { texto: 'Depósito', clase: 'badge-success' };
+        case 'transferencia':
+          return { texto: 'Transferencia', clase: 'badge-warning' };
+        default:
+          return { texto: 'Otro', clase: 'badge-secondary' };
+      }
+    }
+  </script>
+</body>
+</html>
